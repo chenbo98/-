@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>dom可拖动</title>
+</head>
+    <style>
+        #move{
+            width: 230px;
+            height: 230px;    
+            position:absolute;  /*设置元素为absolute/fixed  dom元素才可拖动*/           
+        }
+        #move-header{
+            width: 200px;
+            height: 40px.;
+            cursor: move;   /*鼠标移上去变样式*/
+        }
+        #expression{
+            transition: opacity 3s;
+        }
+        #move-right{
+            width: 100px;
+            height: auto;
+            z-index: 3; /*z轴 高于其他元素*/
+            position:fixed;  
+            left: 500px;
+            background-color: #fff;
+            border: 1px #000 solid;
+            opacity: 0.7;
+            display: none;           
+        }
+        #move-right a{
+            display: block;
+            line-height: 30px;
+            height: 30px;
+            width: 100px;
+            text-align: center;
+           text-decoration: none;
+        }
+        #move-right a:hover{
+            color: #fff;
+            background-color: #000;
+        }
+    </style>
+<body>
+    <div id="move">
+        <div id="move-header"><img src="img/qq表情/14.gif" id="expression"/></div>       
+    </div>
+     <div id="move-right">
+            <a href="#" id="feed"><tr><td>喂食</td></tr><br/></a>
+            <a href="#"><tr><td>洗澡</td></tr><br/></a>
+            <a href="#"><tr><td>睡觉</td></tr><br/></a>
+    </div>
+</body>
+    <script type="text/javascript">
+       
+       
+        window.onload=function(){
+            norightkey();  //执行页面禁止鼠标右键动作
+            qqexpression();
+                      
+            var mouseoffsetX = 0;// 记录鼠标开始拖动元素时的x轴
+            var mouseoffsetY = 0;// 记录鼠标开始拖动元素时的y轴
+            var isDraging = false;//记录元素是否可拖动          
+            //当元素按下时
+            get('move').addEventListener('mousedown',function(e){
+                var e = e||window.event; //获取window窗口对象
+                mouseoffsetX = e.pageX-get('move').offsetLeft;
+                mouseoffsetY = e.pageY-get('move').offsetTop;
+                isDraging=true; //按下时 改为true 标记可拖动
+                if(e.button==2){   //当在这个元素右键时  将元素右键菜单 显示出来 并且跟随鼠标的位置 进行显示               
+                   get('move-right').style.display = 'block';
+                   get('move-right').style.left =e.pageX-mouseoffsetX+mouseoffsetX+'px';
+                   get('move-right').style.top = e.pageY-mouseoffsetY+mouseoffsetY+'px';                 
+                }else{   //当不是右键点击时            
+                   get('move-right').style.display = 'none';
+                }
+                document.onclick=function(){ //当在页面点击时 隐藏菜单
+                    get('move-right').style.display = 'none';
+                } 
+//                this.onmouseleave(function(){ //当在这个元素...... 好像失效了 -_-
+//                    get('move-right').style.display = 'none';
+//                });
+               
+            });
+           
+            
+            
+            //鼠标指针移到指定的对象时发生。拖动元素移动时
+            document.onmousemove=function(e){
+                var e = e||window.event;//获取window窗口对象
+                var moveX = 0; //x轴移动的距离
+                var moveY = 0; //y轴移动的距离
+                
+                if(isDraging==true){
+                    moveX = e.pageX-mouseoffsetX; //x轴当前鼠标位置 - 上次拖动开始的位置 =x轴移动的距离
+                    moveY = e.pageY-mouseoffsetY; //Y轴当前鼠标位置 - 上次拖动开始的位置 =y轴移动的距离
+                    
+                    get('move').style.left = moveX+'px'; //将x轴移动的距离 给移动的元素
+                    get('move').style.top = moveY+'px';  //将y轴移动的距离 给移动的元素
+                }
+            }
+        
+            //停止拖动时
+         document.onmouseup=function(){ 
+             isDraging = false; //标记元素不可拖动
+         }
+        
+             
+        
+        //方法封装   dom 元素获取 id   
+        function get(id){
+            return document.getElementById(id); 
+        }
+        //屏蔽鼠标右键
+        function norightkey(){           
+            // 或者直接返回整个事件
+            document.oncontextmenu = function(){             
+                    return false;
+            }
+        }  
+        /*表情切换 封装*/
+        function qqexpression(){
+            get('feed').addEventListener('click',function(){
+                get('expression').style.opacity =0;
+                setTimeout(function(){
+                    
+                    get('expression').style.opacity =0.8;
+                    get('expression').setAttribute("src","img/qq表情/11.gif");
+                },"3000");
+                 
+                
+            });
+        }
+            
+        }
+    </script>
+</html>
